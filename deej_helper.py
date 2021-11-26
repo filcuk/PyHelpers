@@ -12,6 +12,7 @@ deej_exe = deej_dir + r'deej.exe'
 deej_cfg = deej_dir + r'config.yaml'
 
 # Get com devices
+# WARNING: Currently grabs the last com device found!
 com_ports = list(ports.comports())
 for i in com_ports:
     print(i.device)
