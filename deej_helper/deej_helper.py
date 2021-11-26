@@ -8,9 +8,9 @@ import subprocess
 import psutil
 import yaml
 
-deej_dir = r'C:\Users\FilipK\AppData\Local\Deej\\'
-deej_exe = 'deej.exe'
-deej_cfg = deej_dir + r'config.yaml'
+deej_dir = r'C:\Users\FilipK\AppData\Local\Portable\Deej\\'
+deej_exe = deej_dir + 'deej.exe'
+deej_cfg = deej_dir + 'config.yaml'
 
 # Get com devices
 # WARNING: Currently grabs the last com device found!
@@ -29,9 +29,9 @@ with open(deej_cfg, 'w') as cfg:
 
 # Exit Deej if runnning
 for proc in psutil.process_iter():
-    if proc.name() == deej_exe:
+    if proc.name() == deej_exe.split('\\')[-1]:
         proc.kill()
 
 # Start Deej
 # Specify working dir for Deej to load it's config from
-process = subprocess.Popen(deej_dir + deej_exe, cwd = deej_dir)
+process = subprocess.Popen(deej_exe, cwd = deej_dir)
