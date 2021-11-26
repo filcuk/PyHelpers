@@ -19,6 +19,11 @@ for i in com_ports:
     deej_com = i.device
     break
 
+# Exit Deej if runnning
+for proc in psutil.process_iter():
+    if proc.name() == deej_exe.split('\\')[-1]:
+        proc.kill()
+
 # Modify Deej config
 with open(deej_cfg) as cfg:
     elm_list = yaml.safe_load(cfg)
@@ -27,11 +32,6 @@ with open(deej_cfg) as cfg:
         
         with open(deej_cfg, 'w') as cfg:
             yaml.dump(elm_list, cfg)
-
-# Exit Deej if runnning
-for proc in psutil.process_iter():
-    if proc.name() == deej_exe.split('\\')[-1]:
-        proc.kill()
 
 # Start Deej
 # Specify working dir for Deej to load it's config from
