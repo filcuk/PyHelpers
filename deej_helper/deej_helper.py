@@ -1,6 +1,7 @@
 # Deej Helper
 # - Sets com port in config and restarts Deej
 # - https://github.com/omriharel/deej
+# WARNING! Currently removes all comments from config - needs switch to ruamel.yaml
 
 import serial.tools.list_ports as ports
 import subprocess
