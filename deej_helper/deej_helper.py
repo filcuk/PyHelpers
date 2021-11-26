@@ -1,7 +1,7 @@
 # Deej Helper
 # - Sets com port in config and restarts Deej
 # - https://github.com/omriharel/deej
-# WARNING! Currently removes all comments from config - needs switch to ruamel.yaml
+# WARNING: Currently removes all comments from config - needs switch to ruamel.yaml
 
 import serial.tools.list_ports as ports
 import subprocess
@@ -13,19 +13,20 @@ deej_exe = deej_dir + 'deej.exe'
 deej_cfg = deej_dir + 'config.yaml'
 
 # Get com devices
-# WARNING: Currently grabs the last com device found!
+# WARNING: Currently grabs the first com device found!
 com_ports = list(ports.comports())
 for i in com_ports:
-    print(i.device)
     deej_com = i.device
+    break
 
 # Modify Deej config
 with open(deej_cfg) as cfg:
     elm_list = yaml.safe_load(cfg)
-    elm_list['com_port'] = deej_com
-
-with open(deej_cfg, 'w') as cfg:
-    yaml.dump(elm_list, cfg)
+    if elm_list['com_port'] != deej_com:
+        elm_list['com_port'] = deej_com
+        
+        with open(deej_cfg, 'w') as cfg:
+            yaml.dump(elm_list, cfg)
 
 # Exit Deej if runnning
 for proc in psutil.process_iter():
