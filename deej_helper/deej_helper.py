@@ -11,13 +11,26 @@ import yaml
 deej_dir = r'C:\Users\FilipK\AppData\Local\Portable\Deej\\'
 deej_exe = deej_dir + 'deej.exe'
 deej_cfg = deej_dir + 'config.yaml'
+ardu_ser = '9&359448A7&0&4' # Leave blank to get first COM device instead
 
 # Get com devices
-# WARNING: Currently grabs the first com device found!
 com_ports = list(ports.comports())
 for i in com_ports:
-    deej_com = i.device
-    break
+    if ardu_ser == '':
+        deej_com = i.device
+        break
+    else:
+        if i.serial_number == ardu_ser:
+            deej_com = i.device
+            break
+
+try:
+    deej_com
+except NameError:
+    print('No device found with matching serial number.')
+    quit()
+else:
+    print('Device found on port ' + deej_com)
 
 # Exit Deej if runnning
 for proc in psutil.process_iter():
