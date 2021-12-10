@@ -129,3 +129,4 @@ dmypy.json
 .pyre/
 test.py
 deej_helper/config.yaml
+portables_launcher/config.yaml
