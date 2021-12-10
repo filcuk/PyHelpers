@@ -8,8 +8,20 @@
 
 import serial.tools.list_ports as ports
 import subprocess
+import argparse
 import psutil
 import yaml
+
+def get_com_device(serial = ''):
+    com_ports = list(ports.comports())
+    for i in com_ports:
+        if serial == '' or serial == i.serial_number:
+            return i.device
+
+# Retrieve CLI arguments
+parser = argparse.ArgumentParser(description='Updates Deej config and restarts the app.')
+parser.add_argument('--com_port', type=str, help='Enforces COM port.')
+args = parser.parse_args()
 
 # Get values from config
 help_cfg = 'config.yaml'
@@ -22,27 +34,23 @@ with open(help_cfg) as cfg:
 deej_exe = deej_dir + 'deej.exe'
 deej_cfg = deej_dir + 'config.yaml'
 
-# Get com devices
-com_ports = list(ports.comports())
-for i in com_ports:
-    if ardu_ser == '':
-        deej_com = i.device
-        break
-    else:
-        if i.serial_number == ardu_ser:
-            deej_com = i.device
-            break
+# Get com device
+if args.com_port != None:
+    deej_com = args.com_port
+else:
+    deej_com = get_com_device(ardu_ser)  
 
-try:
-    deej_com
-except NameError:
+if deej_com == None:
     print('No device found using ' \
           + 'com device lookup.' \
           if ardu_ser == '' \
           else 'serial no. match.')
     quit()
 else:
-    print('Device found on port ' + deej_com + '.')
+    if args.com_port != None:
+        print('Device port enforced ' + deej_com + '.')
+    else:
+        print('Device found on port ' + deej_com + '.')
 
 # Exit Deej if runnning
 for proc in psutil.process_iter():
