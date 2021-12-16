@@ -1,2 +1,2 @@
 # PyHelpers
-Small scripts for automation of menial tasks
+Simple scripts targeting specific issues or menial tasks.
