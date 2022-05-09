@@ -17,18 +17,17 @@ def start():
         'x-api-key': apikey,
         'Content-Type': 'application/json'
     }
-    cookies = {
-        'SESSION_ID': '' 
-    }
     data = {
         'registrationNumber': reg
     }
 
-    r = requests.post(url, headers=headers, cookies=cookies, data=json.dumps(data))
+    r = requests.post(url, headers=headers, data=json.dumps(data))
     if (r.status_code == 200):
         print(json.dumps(r.json(), indent=4, sort_keys=True).replace('\"', ''))
+    elif (r.status_code == 429 and r.reason == 'Null'):
+        print('429: Too Many Collective Requests')
     else:
-        print(r.status_code)
+        print(str(r.status_code) + ': ' + r.reason)
     print('\n')
     
     start()
