@@ -1,5 +1,11 @@
 # https://gitea.ksol.io/karolyi/py3-validate-email
-from validate_email import validate_email
+try:
+    from validate_email import validate_email
+    print('Module validate_email is already installed.')
+except ModuleNotFoundError:
+    print('Module validate_email is not installed, attempting to install...')
+    install('py3-validate-email')
+    
 
 def start():
     address = input('Enter email: ').strip()
