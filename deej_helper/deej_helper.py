@@ -15,10 +15,19 @@ import psutil
 import yaml
 import os
 
-def get_com_device(serial = ''):
+def get_com_by_sn(serial = ''):
     com_ports = list(ports.comports())
     for i in com_ports:
         if serial == '' or serial == i.serial_number:
+            return i.device
+
+def get_com_by_id():
+    # Arduino Micro
+    pid = '2341'
+    hid = '8037'
+    com_ports = list(ports.comports())
+    for i in com_ports:
+        if pid and hid in i.hwid:
             return i.device
 
 # Retrieve CLI arguments
@@ -40,24 +49,25 @@ deej_exe = deej_dir + '\deej.exe'
 deej_cfg = deej_dir + '\config.yaml'
 
 if not (os.path.exists(deej_exe) and os.path.exists(deej_cfg)):
-    print('Deej files not found at the specified path.')
+    print('Deej files not found at the specified path!')
     quit()
     
 # Get com device
 if args.com_port != None:
     deej_com = args.com_port
+elif args.ard_sn != None:
+    deej_com = get_com_by_sn(args.ard_sn)  
 else:
-    deej_com = get_com_device(args.ard_sn)  
+    deej_com = get_com_by_id()
 
 if deej_com == None:
-    print('No device found using ' \
-        + 'com device lookup.' \
-        if args.ard_sn == '' \
-        else 'serial no. match.')
+    print('No device found!')
     quit()
 else:
     if args.com_port != None:
         print('Manual device port ' + deej_com + '.')
+    elif args.ard_sn != None:
+        print('Device s/n ' + args.ard_sn + ' found on port ' + deej_com + '.')
     else:
         print('Device found on port ' + deej_com + '.')
 
