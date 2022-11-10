@@ -1,13 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# Deej Helper
-# Set com port in Deej config and restart [Deej](https://github.com/omriharel/deej).
-# CLI args:
-#   - cfg_path: optional, Deej config path, same as script path if not specified
-#   - com_port: optional, COM port, first active is used if not specified
-#   - ard_sn: optional, Arduino serial number used to determine COM port
-# WARNING: Removes all comments from config
-
 import serial.tools.list_ports as ports
 import subprocess
 import argparse
