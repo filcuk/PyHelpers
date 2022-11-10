@@ -1,16 +1,19 @@
 # -*- coding: utf-8 -*-
 
 # Deej Helper
-# - Sets com port in config and restarts Deej
-# - Add device serial to config or leave blank to use first device found
-# - https://github.com/omriharel/deej
-# WARNING: Currently removes all comments from config - needs switch to ruamel.yaml
+# Set com port in Deej config and restart [Deej](https://github.com/omriharel/deej).
+# CLI args:
+#   - cfg_path: optional, Deej config path, same as script path if not specified
+#   - com_port: optional, COM port, first active is used if not specified
+#   - ard_sn: optional, Arduino serial number used to determine COM port
+# WARNING: Removes all comments from config
 
 import serial.tools.list_ports as ports
 import subprocess
 import argparse
 import psutil
 import yaml
+import os
 
 def get_com_device(serial = ''):
     com_ports = list(ports.comports())
@@ -19,36 +22,42 @@ def get_com_device(serial = ''):
             return i.device
 
 # Retrieve CLI arguments
-parser = argparse.ArgumentParser(description='Updates Deej config and restarts the app.')
-parser.add_argument('--com_port', type=str, help='Enforces COM port.')
+parser = argparse.ArgumentParser(description='Updates Deej config and reloads the app.')
+parser.add_argument('--com_port', type=str, help='Manual COM port (optional).')
+parser.add_argument('--cfg_path', type=str, help='Manual config path (optional).')
+parser.add_argument('--ard_sn', type=str, help='Arduino serial number (optional).')
 args = parser.parse_args()
 
-# Get values from config
-help_cfg = 'config_helper.yaml'
+# Setup paths
+if args.cfg_path != None:
+    deej_dir = args.cfg_path
+    print('Manual config path ' + deej_dir + '.')
+else:
+    deej_dir = os.path.abspath(os.path.dirname(__file__))
+    print('Config path ' + deej_dir + '.')
 
-with open(help_cfg) as cfg:
-    elm_list = yaml.safe_load(cfg)
-    deej_dir = elm_list['deej_dir']
-    ardu_ser = elm_list['ardu_ser']
+deej_exe = deej_dir + '\deej.exe'
+deej_cfg = deej_dir + '\config.yaml'
 
-deej_exe = deej_dir + 'deej.exe'
-deej_cfg = deej_dir + 'config.yaml'
-
+if not (os.path.exists(deej_exe) and os.path.exists(deej_cfg)):
+    print('Deej files not found at the specified path.')
+    quit()
+    
 # Get com device
 if args.com_port != None:
     deej_com = args.com_port
 else:
-    deej_com = get_com_device(ardu_ser)  
+    deej_com = get_com_device(args.ard_sn)  
 
 if deej_com == None:
     print('No device found using ' \
-          + 'com device lookup.' \
-          if ardu_ser == '' \
-          else 'serial no. match.')
+        + 'com device lookup.' \
+        if args.ard_sn == '' \
+        else 'serial no. match.')
     quit()
 else:
     if args.com_port != None:
-        print('Device port enforced ' + deej_com + '.')
+        print('Manual device port ' + deej_com + '.')
     else:
         print('Device found on port ' + deej_com + '.')
 
