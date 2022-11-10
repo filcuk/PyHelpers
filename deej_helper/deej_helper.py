@@ -24,7 +24,7 @@ parser.add_argument('--com_port', type=str, help='Enforces COM port.')
 args = parser.parse_args()
 
 # Get values from config
-help_cfg = 'config.yaml'
+help_cfg = 'config_helper.yaml'
 
 with open(help_cfg) as cfg:
     elm_list = yaml.safe_load(cfg)
